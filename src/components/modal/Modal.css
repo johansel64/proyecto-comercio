@@ -1,0 +1,110 @@
+.modalGeneneric {
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: none;
+  overflow: scroll;
+  overflow-x: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.modalGeneneric::-webkit-scrollbar {
+  display: none;
+}
+
+.modalGeneneric.isOpen {
+  display: flex;
+  animation: fadein 500ms;
+  -moz-animation: fadein 500ms;
+  -webkit-animation: fadein 500ms;
+  -o-animation: fadein 500ms;
+}
+
+.modalGenenericContainer {
+  height: fit-content;
+  max-height: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+.modalGenenericContent {
+  border-radius: 16px;
+  background-color: #fff;
+  margin-top: 10px;
+  padding: 20px;
+  width: 311px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.modalGenenericClose {
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: end;
+  margin-right: 10px;
+  margin-bottom: -15px;
+  color: var(--colors-text2);
+  font-weight: 600;
+}
+
+@media (max-width: 375px) {
+  .modalGenenericContent {
+    width: 265px;
+  }
+}
+
+/* Animation for Modal */
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,1 @@
+export const IMG_NULL = 'https://firebasestorage.googleapis.com/v0/b/inventariobastos-294b7.appspot.com/o/descarga.png?alt=media&token=b2c327fd-e524-40fa-b5f4-6bb5a9ed429a';

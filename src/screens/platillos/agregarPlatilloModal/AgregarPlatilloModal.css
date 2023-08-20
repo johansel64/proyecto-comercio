@@ -1,0 +1,11 @@
+.containerForm {
+  width: 100%;
+}
+
+.containerButton {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+

@@ -1,0 +1,25 @@
+.button {
+    background-color: rgb(184, 184, 184);
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    color: #FFFFFF;
+    padding: 5px 20px;
+    border: none;
+    border-radius: 16px;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+.disabledButton {
+    background-color: rgba(184, 184, 184, 0.541) !important;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    color: #FFFFFF;
+    padding: 5px 20px;
+    border: none;
+    border-radius: 16px;
+}

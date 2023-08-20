@@ -1,0 +1,12 @@
+.mkMyPortal {
+    display: flex;
+    justify-content: center;
+    margin: 32px 16px 0px 16px;
+  }
+  
+  .mkMyPortal .mkContentContainer {
+    width: 1280px;
+    color: #646b70;
+    display: flex;
+  }
+  
