@@ -10,10 +10,7 @@ import {
     where,
     query,
   } from "firebase/firestore";
-  import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
   import { storage, db } from "./FirebaseConfig";
-  import { v4 as uuidv4 } from "uuid";
-  import imageCompression from "browser-image-compression";
   
   //CAMPOS - numeroPlaca, descripcion, marca, idFuncionarioResponsable
   const collectionNameActivos = "Activos";
@@ -35,411 +32,229 @@ import {
   //FUNCIONARIOS
   export const saveFuncionario = async (id, nombreCompleto, idDepartamento, rol) => {
     try {
-      const registerDate = Math.floor(Date.now() / 1000);
-      const docuRef = await addDoc(collection(db, collectionNameFuncionarios), {id, nombreCompleto, fechaRegistro:registerDate, idDepartamento, rol});
-      console.log(docuRef);
+      const registerDate = firebase.firestore.FieldValue.serverTimestamp();
+      const funcionarioData = {
+        id,
+        nombreCompleto,
+        fechaRegistro: registerDate,
+        idDepartamento,
+        rol
+      };
+  
+      await db.collection(collectionNameFuncionarios).add(funcionarioData);
+      return { success: true, message: 'Funcionario guardado exitosamente' };
     } catch (error) {
-      
+      console.error('Error al guardar el funcionario:', error);
+      return { success: false, message: 'Error al guardar el funcionario' };
     }
-  }
+  };
   
-  export const saveProduct = async (newProduct) => {
+  export const updateFuncionario = async (funcionarioId, nombreCompleto, idDepartamento, rol) => {
     try {
-      // Consultar la colección de productos
-      const productsRef = collection(db, collectionNameActivos);
-      const querySnapshot = await getDocs(productsRef);
+      const funcionarioRef = db.collection(collectionNameFuncionarios).doc(funcionarioId);
   
-      // Verificar si ya existe un producto con el mismo nombre
-      const existingProduct = querySnapshot.docs.find(doc => doc.data().name === newProduct.name);
-      if (existingProduct) {
-        throw new Error(`Ya existe un producto con el nombre "${newProduct.name}".`);
+      // Verificar si el funcionario existe antes de actualizar
+      const doc = await funcionarioRef.get();
+      if (!doc.exists) {
+        return { success: false, message: 'El funcionario no existe' };
       }
   
-      // Agregar el nuevo producto si no existe uno con el mismo nombre
-      const docRef = await addDoc(productsRef, newProduct);
-      return docRef.id;
-    } catch (error) {
-      throw error;
-    }
-  };
-  
-  
-  export const updateProduct = (updatedFields) => {
-    return updateDoc(doc(db, collectionNameActivos, updatedFields.id), updatedFields);
-  }
-  
-  export const getProducts = () => {return getDocs(collection(db, collectionNameActivos))};
-  
-  export const deleteProduct = (id) => deleteDoc(doc(db, collectionNameActivos, id));
-  
-  export const getProduct = (id) => getDoc(doc(db, collectionNameActivos, id));
-
-  export const getAllProducts = async () => {
-    const data = await getProducts();
-    const sortedProducts = data.docs
-      .map((doc) => ({ ...doc.data(), id: doc.id }))
-      .sort((a, b) => a.count - b.count); // Ordenar por count en orden ascendente
-    return sortedProducts;
-  };
-
-
-  //GUARDAR PLATILLOS
-
-  // Función para guardar un nuevo platillo y asociar los productos existentes
-  export const savePlatillosWithExistingProducts = async (newPlatillo, existingProductsIds) => {
-    // Agrega el campo "productosIds" al platillo con los IDs de los productos asociados
-    newPlatillo.productosIds = existingProductsIds;
-
-    const platilloRef = await addDoc(collection(db, collectionNameDepartamentos), newPlatillo);
-
-    return platilloRef.id;
-  };
-
-  
-  // Función para actualizar un platillo por su ID
-  export const updatePlatillo = async (platilloId, updatedData) => {
-    try {
-      const platilloRef = doc(db, collectionNameDepartamentos, platilloId);
-
-      await updateDoc(platilloRef, updatedData);
-
-      const updatedPlatilloSnapshot = await getDoc(platilloRef);
-      const updatedPlatilloData = updatedPlatilloSnapshot.data();
-
-      return {
-        id: platilloRef.id,
-        data: updatedPlatilloData,
+      const updatedData = {
+        nombreCompleto,
+        idDepartamento,
+        rol
       };
-
+  
+      await funcionarioRef.update(updatedData);
+      return { success: true, message: 'Funcionario actualizado exitosamente' };
     } catch (error) {
-      throw error;
+      console.error('Error al actualizar el funcionario:', error);
+      return { success: false, message: 'Error al actualizar el funcionario' };
     }
   };
   
-  // Función para obtener todos los platillos
-  export const getAllPlatillos = async () => {
+  
+
+  //DEPARTAMENTOS
+  export const saveDepartamentos = async (nombreDepartamento, codigo, ubicacion) => {
     try {
-      const platillosRef = collection(db, collectionNameDepartamentos);
-      const platillosSnapshot = await getDocs(platillosRef);
+      // Validar que los campos requeridos estén completos
+      if (!nombreDepartamento || !codigo || !ubicacion) {
+        return { success: false, message: 'Completa todos los campos' };
+      }
   
-      const platillosWithProductos = [];
+      // Guardar el departamento en la colección "Departamentos"
+      await db.collection(collectionNameDepartamentos).add({
+        nombreDepartamento,
+        codigo,
+        ubicacion
+      });
   
-      for (const platilloDoc of platillosSnapshot.docs) {
-        const platilloData = platilloDoc.data();
-        const { productosIds } = platilloData;
+      return { success: true, message: 'Departamento guardado exitosamente' };
+    } catch (error) {
+      console.error('Error al guardar el departamento:', error);
+      return { success: false, message: 'Error al guardar el departamento' };
+    }
+  };
+
+  export const fetchFuncionarios = async () => {
+    try {
+      const querySnapshot = await db.collection(collectionNameFuncionarios).get();
+      const funcionarios = [];
   
-        let precioTotalPlatillo = 0;
-        let cantidadesPlatillos = [];
-        const productos = [];
-  
-        for (const productId of productosIds) {
-          const productDocRef = doc(db, collectionNameActivos, productId);
-          const productSnapshot = await getDoc(productDocRef);
-  
-          if (!productSnapshot.exists()) {
-            throw new Error(`El producto con ID ${productId} no fue encontrado.`);
-          }
-  
-          const productData = productSnapshot.data();
-          const precioProducto = parseFloat(productData.price);
-          precioTotalPlatillo += precioProducto;
-  
-          const cantidadDisponible = parseInt(productData.count);
-          cantidadesPlatillos.push(cantidadDisponible);
-  
-          // Agregar ID y nombre del producto al array de productos
-          productos.push({ id: productId, nombre: productData.name });
-        }
-  
-        const cantidadMaximaPlatillos = Math.min(...cantidadesPlatillos);
-        cantidadesPlatillos = [];
-  
-        // Agregar el precio total y lista de productos al objeto del platillo
-        const platilloConProductos = {
-          id: platilloDoc.id,
-          ...platilloData,
-          precioTotal: precioTotalPlatillo,
-          cantidadDePlatillos: cantidadMaximaPlatillos,
-          productos: productos,
+      querySnapshot.forEach((doc) => {
+        const funcionario = {
+          id: doc.id,
+          ...doc.data()
         };
-        platillosWithProductos.push(platilloConProductos);
-      }
-  
-      return platillosWithProductos;
-    } catch (error) {
-      console.error('Error al obtener los platillos:', error);
-      throw error;
-    }
-  };
-
-
-  export const getPlatilloById = async (platilloId) => {
-      const platilloDocRef = doc(db, collectionNameDepartamentos, platilloId);
-      const platilloSnapshot = await getDoc(platilloDocRef);
-  
-      if (!platilloSnapshot.exists()) {
-        return null; // El platillo no fue encontrado.
-      }
-  
-      const platilloData = platilloSnapshot.data();
-      const { productosIds } = platilloData;
-  
-      // Cotizar los precios de los productos asociados al platillo
-      let precioTotalPlatillo = 0;
-      for (const productId of productosIds) {
-        const productDocRef = doc(db, collectionNameActivos, productId);
-        const productSnapshot = await getDoc(productDocRef);
-  
-        if (!productSnapshot.exists()) {
-          throw new Error(`El producto con ID ${productId} no fue encontrado.`);
-        }
-  
-        const productData = productSnapshot.data();
-        const precioProducto = parseFloat(productData.price);
-        precioTotalPlatillo += precioProducto;
-      }
-  
-      // Agregar el precio total al objeto del platillo
-      const platilloConPrecio = { id: platilloSnapshot.id, ...platilloData, precioTotal: precioTotalPlatillo };
-  
-      return platilloConPrecio;
-  };
-  
-
-  // Función para borrar un platillo por su ID
-  export const deletePlatillo = async (platilloId) => {
-    const platilloRef = doc(db, collectionNameDepartamentos, platilloId);
-
-    await deleteDoc(platilloRef);
-  };
-
-
-  //SUBIR ARCHIVOS
-  export const uploadFiles = async (file) => {
-    try {
-      // Validar que el archivo sea un objeto File o Blob y tenga un tamaño válido
-      if (!(file instanceof File) && !(file instanceof Blob)) {
-        throw new Error("El archivo proporcionado no es válido.");
-      }
-  
-      if (file.size === 0) {
-        throw new Error("El archivo está vacío.");
-      }
-  
-      // Comprimir la imagen antes de subirla
-      const options = {
-        maxSizeMB: 1, // Tamaño máximo después de la compresión (ajusta según tus necesidades)
-        maxWidthOrHeight: 800, // Tamaño máximo de ancho o alto (ajusta según tus necesidades)
-      };
-      const compressedFile = await imageCompression(file, options);
-  
-      // Generar un nombre único para el archivo
-      const uniqueFileName = `${uuidv4()}-${file.name}`;
-      // Subir el archivo comprimido al almacenamiento
-      const storageRef = ref(storage, "img/" + uniqueFileName);
-
-      await uploadBytes(storageRef, compressedFile);
-  
-      // Obtener la URL de descarga
-      const downloadURL = await getDownloadURL(storageRef);
-      return downloadURL;
-    } catch (error) {
-      console.error("Error al subir el archivo comprimido:", error);
-      throw error;
-    }
-  };
-
-  ///////////////////////////ORDENES///////////////////////////////////
-
-  export const addNewOrder = async (platilloId, count) => {
-    try {
-      const orderDate = Math.floor(Date.now() / 1000);
-      const newOrder = { platilloId, count, orderDate, state: 'new' };
-      const ordenRef = await addDoc(collection(db, collectionNameOrder), newOrder);
-  
-      const platilloDocRef = doc(db, collectionNameDepartamentos, platilloId);
-      const platilloSnapshot = await getDoc(platilloDocRef);
-  
-      if (!platilloSnapshot.exists()) {
-        return null; // El platillo no fue encontrado.
-      }
-  
-      const platilloData = platilloSnapshot.data();
-      const { productosIds } = platilloData;
-  
-      // Realizamos todas las operaciones de lectura necesarias fuera del bucle de la transacción
-      const productosPromises = productosIds.map((productId) => {
-        const productDocRef = doc(db, collectionNameActivos, productId);
-        return getDoc(productDocRef);
+        funcionarios.push(funcionario);
       });
   
-      // Esperamos a que todas las lecturas se completen antes de continuar con las operaciones de escritura
-      const productosSnapshots = await Promise.all(productosPromises);
+      return { success: true, data: funcionarios };
+    } catch (error) {
+      console.error('Error al obtener funcionarios:', error);
+      return { success: false, message: 'Error al obtener funcionarios' };
+    }
+  };
+
+  export const updateDepartamento = async (departamentoId, nombreDepartamento, codigo, ubicacion) => {
+    try {
+      // Validar que los campos requeridos estén completos
+      if (!nombreDepartamento || !codigo || !ubicacion) {
+        return { success: false, message: 'Completa todos los campos' };
+      }
   
-      // Cotizar los precios de los productos asociados al platillo
-      await runTransaction(db, async (transaction) => {
-        for (let i = 0; i < productosSnapshots.length; i++) {
-          const productSnapshot = productosSnapshots[i];
-  
-          if (!productSnapshot.exists()) {
-            throw new Error(`El producto con ID ${productosIds[i]} no fue encontrado.`);
-          }
-  
-          const productData = productSnapshot.data();
-          const countAvailable = parseFloat(productData.count);
-  
-          if (countAvailable < count) {
-            throw new Error(`No hay suficientes unidades del producto con ID ${productosIds[i]}.`);
-          }
-  
-          transaction.update(productSnapshot.ref, { count: countAvailable - count });
-        }
+      // Actualizar el departamento en la colección "Departamentos"
+      await db.collection(collectionNameDepartamentos).doc(departamentoId).update({
+        nombreDepartamento,
+        codigo,
+        ubicacion
       });
   
-      return ordenRef.id;
+      return { success: true, message: 'Departamento actualizado exitosamente' };
     } catch (error) {
-      console.error('Error al agregar la orden y restar los productos:', error);
-      throw error;
+      console.error('Error al actualizar el departamento:', error);
+      return { success: false, message: 'Error al actualizar el departamento' };
     }
   };
 
-  /////////////////////Actualiza una Orden//////////////////////
-
-  export const updateOrder = async (orderId, newState) => {
+  export const fetchDepartamentos = async () => {
     try {
-      const orderRef = doc(db, collectionNameOrder, orderId);
+      const querySnapshot = await db.collection(collectionNameDepartamentos).get();
+      const departamentos = [];
   
-      const orderSnapshot = await getDoc(orderRef);
-      if (!orderSnapshot.exists()) {
-        return null; // La orden no fue encontrada.
-      }
+      querySnapshot.forEach((doc) => {
+        const departamento = {
+          id: doc.id,
+          ...doc.data()
+        };
+        departamentos.push(departamento);
+      });
   
-      // Actualiza el estado de la orden
-      await updateDoc(orderRef, { state: newState });
-  
-      return orderId;
+      return { success: true, data: departamentos };
     } catch (error) {
-      console.error('Error al actualizar la orden:', error);
-      throw error;
+      console.error('Error al obtener departamentos:', error);
+      return { success: false, message: 'Error al obtener departamentos' };
     }
   };
-
-
-  export const getAllOrders = async () => {
+  
+  export const deleteDepartamento = async (departamentoId) => {
     try {
-      const ordersWithPlatillos = await fetchOrdersWithPlatillos();
-      const sortedOrders = sortOrders(ordersWithPlatillos);
-      return sortedOrders;
+      // Eliminar el departamento de la colección "Departamentos"
+      await db.collection(collectionNameDepartamentos).doc(departamentoId).delete();
+  
+      return { success: true, message: 'Departamento eliminado exitosamente' };
     } catch (error) {
-      console.error('Error al obtener y ordenar las órdenes:', error);
-      throw error;
+      console.error('Error al eliminar el departamento:', error);
+      return { success: false, message: 'Error al eliminar el departamento' };
     }
   };
-  
-  const fetchOrdersWithPlatillos = async () => {
-    const ordersCollectionRef = collection(db, collectionNameOrder);
-    const ordersQuerySnapshot = await getDocs(ordersCollectionRef);
-    
-    const ordersWithPlatillos = [];
-    for (const orderDoc of ordersQuerySnapshot.docs) {
-      const orderData = orderDoc.data();
-      if (orderData.state !== "finalized") {
-        const platilloDocRef = doc(db, collectionNameDepartamentos, orderData.platilloId);
-        const platilloSnapshot = await getDoc(platilloDocRef);
-        
-        if (platilloSnapshot.exists()) {
-          const platilloData = platilloSnapshot.data();
-          ordersWithPlatillos.push({
-            id: orderDoc.id,
-            orderData,
-            platilloName: platilloData.name,
-            platilloImg: platilloData.img
-          });
-        }
-      }
+
+
+//ACTIVOS
+
+export const saveActivo = async (numeroPlaca, descripcion, marca, idFuncionarioResponsable) => {
+  try {
+    // Validar que los campos requeridos estén completos
+    if (!numeroPlaca || !descripcion || !marca || !idFuncionarioResponsable) {
+      return { success: false, message: 'Completa todos los campos' };
     }
-    return ordersWithPlatillos;
-  };
-  
-  const sortOrders = (orders) => {
-    return orders.sort((a, b) => {
-      if (a.orderData.state === "new" && b.orderData.state === "inprogress") {
-        return -1;
-      }
-      if (a.orderData.state === "inprogress" && b.orderData.state === "new") {
-        return 1;
-      }
-      return 0;
+
+    // Guardar el activo en la colección "Activos"
+    await db.collection(collectionNameActivos).add({
+      numeroPlaca,
+      descripcion,
+      marca,
+      idFuncionarioResponsable
     });
-  };
-  
-  
 
-  export const getBestSellingPlatilloLastMonth = async () => {
-    try {
-      const nowInSeconds = Math.floor(Date.now() / 1000);
-      const lastMonthInSeconds = nowInSeconds - 2592000;
-  
-      const ordersRef = collection(db, collectionNameOrder);
-  
-      // Consulta para obtener las órdenes finalizadas dentro del último mes
-      const q = query(ordersRef, where('state', '==', 'finalized'), where('orderDate', '>=', lastMonthInSeconds));
-  
-      const querySnapshot = await getDocs(q);
-  
-      const platilloSales = {};
-  
-      // Calcular ventas y ganancias para cada platillo en las órdenes finalizadas del último mes
-      for (const orderDoc of querySnapshot.docs) {
-        const orderData = orderDoc.data();
-        const platilloId = orderData.platilloId;
-        const count = orderData.count;
-  
-        // Obtenemos el precio del platillo desde la colección "Platillos"
-        const platilloDocRef = doc(db, collectionNameDepartamentos, platilloId);
-        const platilloSnapshot = await getDoc(platilloDocRef);
-  
-        if (!platilloSnapshot.exists()) {
-          continue; // El platillo no fue encontrado, pasamos al siguiente.
-        }
-  
-        const platilloData = platilloSnapshot.data();
-        const platilloPrice = platilloData.price;
-  
-        if (!platilloSales[platilloId]) {
-          platilloSales[platilloId] = {
-            count: 0,
-            totalRevenue: 0,
-          };
-        }
-  
-        platilloSales[platilloId].count += count;
-        platilloSales[platilloId].totalRevenue += platilloPrice * count;
-      }
-  
-      // Encontrar el platillo con más ventas
-      let bestSellingPlatilloId = null;
-      let maxSalesCount = 0;
-      for (const platilloId in platilloSales) {
-        if (platilloSales[platilloId].count > maxSalesCount) {
-          bestSellingPlatilloId = platilloId;
-          maxSalesCount = platilloSales[platilloId].count;
-        }
-      }
-  
-      // Calcular las ganancias del platillo más vendido
-      const bestSellingPlatilloRevenue = platilloSales[bestSellingPlatilloId]?.totalRevenue || 0;
-  
-      return {
-        bestSellingPlatilloId,
-        bestSellingPlatilloSales: maxSalesCount,
-        bestSellingPlatilloRevenue,
-      };
-    } catch (error) {
-      console.error('Error al obtener el platillo más vendido y sus ganancias:', error);
-      throw error;
+    return { success: true, message: 'Activo guardado exitosamente' };
+  } catch (error) {
+    console.error('Error al guardar el activo:', error);
+    return { success: false, message: 'Error al guardar el activo' };
+  }
+};
+
+export const updateActivo = async (activoId, numeroPlaca, descripcion, marca, idFuncionarioResponsable) => {
+  try {
+    const activoRef = db.collection(collectionNameActivos).doc(activoId);
+
+    // Verificar si el activo existe antes de actualizar
+    const doc = await activoRef.get();
+    if (!doc.exists) {
+      return { success: false, message: 'El activo no existe' };
     }
-  };
+
+    const updatedData = {
+      numeroPlaca,
+      descripcion,
+      marca,
+      idFuncionarioResponsable
+    };
+
+    await activoRef.update(updatedData);
+    return { success: true, message: 'Activo actualizado exitosamente' };
+  } catch (error) {
+    console.error('Error al actualizar el activo:', error);
+    return { success: false, message: 'Error al actualizar el activo' };
+  }
+};
+
+export const fetchActivo = async (activoId) => {
+  try {
+    const activoRef = db.collection(collectionNameActivos).doc(activoId);
+    const doc = await activoRef.get();
+
+    if (doc.exists) {
+      return { success: true, data: doc.data() };
+    } else {
+      return { success: false, message: 'El activo no existe' };
+    }
+  } catch (error) {
+    console.error('Error al obtener el activo:', error);
+    return { success: false, message: 'Error al obtener el activo' };
+  }
+};
+
+export const fetchActivos = async () => {
+  try {
+    const querySnapshot = await db.collection(collectionNameActivos).get();
+    const activos = [];
+
+    querySnapshot.forEach((doc) => {
+      const activo = {
+        id: doc.id,
+        ...doc.data()
+      };
+      activos.push(activo);
+    });
+
+    return { success: true, data: activos };
+  } catch (error) {
+    console.error('Error al obtener activos:', error);
+    return { success: false, message: 'Error al obtener activos' };
+  }
+};
   
   
   
