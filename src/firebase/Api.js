@@ -1,16 +1,4 @@
-import {
-    collection,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    runTransaction,
-    where,
-    query,
-  } from "firebase/firestore";
-  import { storage, db } from "./FirebaseConfig";
+  import { db } from "./FirebaseConfig";
   
   //CAMPOS - numeroPlaca, descripcion, marca, idFuncionarioResponsable
   const collectionNameActivos = "Activos";
@@ -19,15 +7,6 @@ import {
   //CAMPOS - idFuncionario, nombreCompleto, fechaRegistro, idDepartamento, rol
   const collectionNameFuncionarios = "Funcionarios";
 
-  /*export const getRolUser = async (id) => {
-    const userDoc = await getDoc(doc(db, collectionNameFuncionarios, id));
-    if (userDoc) {
-      const userData = userDoc.data();
-      return userData.rol; // Reemplaza "rol" con el nombre del campo que almacena el rol en tu base de datos
-    } else {
-      throw new Error("El usuario no existe.");
-    }
-  };*/
 
   //FUNCIONARIOS
   export const saveFuncionario = async (id, nombreCompleto, idDepartamento, rol) => {
@@ -255,6 +234,3 @@ export const fetchActivos = async () => {
     return { success: false, message: 'Error al obtener activos' };
   }
 };
-  
-  
-  
