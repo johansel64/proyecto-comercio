@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Cards from "../../components/card/Cards";
-import {
-  getAllPlatillos,
-} from "../../firebase/Api";
+// import {
+//   getAllPlatillos,
+// } from "../../firebase/Api";
 import Loading from "../../components/loading/Loading";
 import { Card, Typography } from "@mui/material";
 import "./Platillos.css";
@@ -26,18 +26,18 @@ const Platillos = () => {
 
   // Obtener todos los platillos y sus productos asociados
   const getAllListPlatillo = async () => {
-    await getAllPlatillos()
-      .then((platillos) => {
-        if (platillos && platillos.length > 0) {
-          setPlatillos(platillos);
-          console.log(platillos)
-        } else {
-          console.log("No hay platillos en la base de datos.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener la lista de platillos:", error);
-      });
+    // await getAllPlatillos()
+    //   .then((platillos) => {
+    //     if (platillos && platillos.length > 0) {
+    //       setPlatillos(platillos);
+    //       console.log(platillos)
+    //     } else {
+    //       console.log("No hay platillos en la base de datos.");
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error al obtener la lista de platillos:", error);
+    //   });
   };
 
 

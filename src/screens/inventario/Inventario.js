@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 //import { toast } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { saveProduct, getAllProducts } from "../../firebase/Api";
+// import { saveProduct, getAllProducts } from "../../firebase/Api";
 import Loading from "../../components/loading/Loading";
 import { Inventory2 } from "@mui/icons-material";
 
@@ -27,14 +27,14 @@ const Inventario = () => {
   }, []);
 
   const getAllProductsTable = async () => {
-    const data = await getAllProducts();
-    setAllProduct(data);
-    console.log(data);
+    // const data = await getAllProducts();
+    // setAllProduct(data);
+    // console.log(data);
   };
 
   const addOrEditProduct = async (product) => {
-    await saveProduct(product);
-    await getAllProductsTable();
+    // await saveProduct(product);
+    // await getAllProductsTable();
     toast.success("Guardado!", {
       position: "top-right",
       autoClose: 5000,

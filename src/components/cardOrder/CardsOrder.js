@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "../../components/button/Button";
 import Typography from "@mui/material/Typography";
-import { updateOrder } from '../../firebase/Api';
+// import { updateOrder } from '../../firebase/Api';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -16,7 +16,7 @@ const imgSinFotoOrder = 'https://firebasestorage.googleapis.com/v0/b/inventariob
 const CardsOrder = ({ orders, refreshOrder }) => {
 
   const handleStateOrder = async (idOrder, state, id) => {
-    await updateOrder(idOrder, state)
+    // await updateOrder(idOrder, state)
     toast.dismiss(id); // Cierra el toast una vez que el producto se haya eliminado
     toast.promise(refreshOrder(),
     {

@@ -4,7 +4,7 @@ import Select from "react-select";
 import "./AgregarPlatilloModal.css";
 import Modal from "../../../components/modal/Modal";
 import TextInput from "../../../components/textInput/TextInput";
-import { getAllProducts, savePlatillosWithExistingProducts, uploadFiles } from "../../../firebase/Api";
+// import { getAllProducts, savePlatillosWithExistingProducts, uploadFiles } from "../../../firebase/Api";
 import Button from "../../../components/button/Button";
 
 const AgregarPlatilloModal = ({ isOpen, onClose, onSaveHandler }) => {
@@ -17,44 +17,44 @@ const AgregarPlatilloModal = ({ isOpen, onClose, onSaveHandler }) => {
   const [error, setError] = useState();
 
   const getProducts = async () => {
-    const data = await getAllProducts();
-    const optionsData = data?.map((item) => {
-      return { value: item?.id, label: item?.name };
-    });
-    setOptions(optionsData);
+    // const data = await getAllProducts();
+    // const optionsData = data?.map((item) => {
+    //   return { value: item?.id, label: item?.name };
+    // });
+    // setOptions(optionsData);
   };
   //value label
   useEffect(() => {
     getProducts();
   }, []);
 
-  const onSave = async () => {
-    if (name && price && description && optionsSelected && image) {
-      const products = [];
-      optionsSelected.forEach((item) => {
-        products.push(item.value);
-      });
-      const urlFile = await uploadFiles(image);
-      const newPlatillo = {
-        name: name,
-        price: price,
-        descripcion: description,
-        img: urlFile
-      };
-      savePlatillosWithExistingProducts(newPlatillo, products)
-      .then (() => {
-        console.log('platillo Guardado exitosamente');
-        onClose();
-      })
-      .catch((error) => {
-        console.log("Error:", error);
-        setError("Por favor verifica que todos los campos esten completos.")
-      })
-    } else {
-      setError("Por favor verifica que todos los campos esten completos.")
-      console.log("no");
-    }
-  };
+  // const onSave = async () => {
+  //   if (name && price && description && optionsSelected && image) {
+  //     const products = [];
+  //     optionsSelected.forEach((item) => {
+  //       products.push(item.value);
+  //     });
+  //     // const urlFile = await uploadFiles(image);
+  //     const newPlatillo = {
+  //       name: name,
+  //       price: price,
+  //       descripcion: description,
+  //       // img: urlFile
+  //     };
+    //   savePlatillosWithExistingProducts(newPlatillo, products)
+    //   .then (() => {
+    //     console.log('platillo Guardado exitosamente');
+    //     onClose();
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error:", error);
+    //     setError("Por favor verifica que todos los campos esten completos.")
+    //   })
+    // } else {
+    //   setError("Por favor verifica que todos los campos esten completos.")
+    //   console.log("no");
+    // }
+  // };
 
   const handleChange = (e, setValue, isFile) => {
     setValue(isFile ? e.target.files[0] : e.target.value);
@@ -87,7 +87,7 @@ const AgregarPlatilloModal = ({ isOpen, onClose, onSaveHandler }) => {
         <Select options={options} isMulti value={optionsSelected} onChange={setOptionsSelected} />
         {error && <p style={{color: 'red'}}>{error}</p>}
         <div className="containerButton">
-          <Button style={{ background: "#1b5e20" }} onClick={() => onSave()}>
+          <Button style={{ background: "#1b5e20" }} onClick={() => {}/*onSave()*/}>
             Agregar
           </Button>
         </div>

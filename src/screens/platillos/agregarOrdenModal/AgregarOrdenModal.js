@@ -5,7 +5,7 @@ import TextInput from "../../../components/textInput/TextInput";
 import "./AgregarOrdenModal.css";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/button/Button";
-import { addNewOrder } from "../../../firebase/Api";
+// import { addNewOrder } from "../../../firebase/Api";
 import { Toaster, toast } from "react-hot-toast";
 
 const AgregarOrdenModal = ({ isOpen, onClose, onSave, idPlatillo, handleUpdatePlatillos }) => {

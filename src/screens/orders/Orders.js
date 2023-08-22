@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CardsOrder from "../../components/cardOrder/CardsOrder";
-import { getAllOrders } from "../../firebase/Api";
+// import { getAllOrders } from "../../firebase/Api";
 import Loading from "../../components/loading/Loading";
 import { Card, Typography } from "@mui/material";
 import { Description } from "@mui/icons-material";
@@ -16,19 +16,19 @@ const Orders = () => {
 
   // Obtener todos las ordenes y sus productos asociados
   const getAllListOrder = async () => {
-    await getAllOrders()
-      .then((orders) => {
-        if (orders && orders.length > 0) {
-          console.log(orders);
-          setOrders(orders);
-        } else {
-          console.log("No hay Ordenes en la base de datos.");
-          setOrders([])
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener la lista de Ordenes:", error);
-      });
+    // await getAllOrders()
+    //   .then((orders) => {
+    //     if (orders && orders.length > 0) {
+    //       console.log(orders);
+    //       setOrders(orders);
+    //     } else {
+    //       console.log("No hay Ordenes en la base de datos.");
+    //       setOrders([])
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error al obtener la lista de Ordenes:", error);
+    //   });
   };
 
   const refreshOrder = async () => {

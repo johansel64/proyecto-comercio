@@ -6,7 +6,7 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { ExportToCsv } from "export-to-csv";
-import { updateProduct, getAllProducts, saveProduct, deleteProduct } from "../../firebase/Api";
+// import { updateProduct, getAllProducts, saveProduct, deleteProduct } from "../../firebase/Api";
 import { priceFormatter } from "../../utils/Utils";
 import CreateNewAccountModal from "./Modales";
 
@@ -121,30 +121,30 @@ const Table = ({ data = [] }) => {
   );
 
   const addProduct = async (product) => {
-    toast.promise(saveProduct(product),
-       {
-         loading: 'Guardando...',
-         success: <b>Producto guardado!</b>,
-         error: <b>Error al guardar.</b>,
-       }
-     );
-    getAllProducts();
+    // toast.promise(saveProduct(product),
+    //    {
+    //      loading: 'Guardando...',
+    //      success: <b>Producto guardado!</b>,
+    //      error: <b>Error al guardar.</b>,
+    //    }
+    //  );
+    // getAllProducts();
 
   };
 
   const editProduct = async (product) => {
-    toast.promise(updateProduct(product),
-       {
-         loading: 'Actualizando...',
-         success: <b>Producto actualizado!</b>,
-         error: <b>Error al actualizar.</b>,
-       }
-     );
+    // toast.promise(updateProduct(product),
+    //    {
+    //      loading: 'Actualizando...',
+    //      success: <b>Producto actualizado!</b>,
+    //      error: <b>Error al actualizar.</b>,
+    //    }
+    //  );
   };
 
   const deleteProductSelected = async (id) => {
-    await deleteProduct(id);
-    getAllProducts();
+    // await deleteProduct(id);
+    // getAllProducts();
   };
 
   const handleExportRows = (rows) => {

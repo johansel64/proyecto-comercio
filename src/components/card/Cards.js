@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "../../components/button/Button";
 import Typography from "@mui/material/Typography";
-import { addNewOrder } from "../../firebase/Api";
+// import { addNewOrder } from "../../firebase/Api";
 import { priceFormatter } from "../../utils/Utils";
 
 import "./Cards.css";
@@ -22,7 +22,7 @@ const Cards = ({ platillos, handleUpdatePlatillos }) => {
 
   const handleCreateOrder = async (id, cantidad) => {
     try {
-      return await addNewOrder(id, cantidad);
+      // return await addNewOrder(id, cantidad);
     } catch (error) {
       return { status: 400, message: "No hay suficientes ingredientes para este platillo." };
     }

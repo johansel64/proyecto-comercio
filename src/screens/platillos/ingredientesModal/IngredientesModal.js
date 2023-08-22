@@ -3,7 +3,7 @@ import Modal from "../../../components/modal/Modal";
 import TextInput from "../../../components/textInput/TextInput";
 import Button from "../../../components/button/Button";
 import Select from "react-select";
-import { getAllProducts, updatePlatillo, uploadFiles } from "../../../firebase/Api";
+// import { getAllProducts, updatePlatillo, uploadFiles } from "../../../firebase/Api";
 import { Toaster, toast } from "react-hot-toast";
 
 // CSS File
@@ -31,31 +31,31 @@ const IngredientesModal = ({ isOpen, onClose, ingredientes, handleUpdatePlatillo
         price: price,
         productosIds: products,
       };
-      try {
-        const res = await updatePlatillo(ingredientes?.id, platillo);
-        if (res?.id) {
-          await handleUpdatePlatillos();
-          onClose();
-          setButtonEnable(false);
+      // try {
+      //   const res = await updatePlatillo(ingredientes?.id, platillo);
+      //   if (res?.id) {
+      //     await handleUpdatePlatillos();
+      //     onClose();
+      //     setButtonEnable(false);
 
-          return true;
-        } else {
-          setButtonEnable(false);
-          return false;
-        }
-      } catch (error) {
-        setButtonEnable(false);
-        return false;
-      }
+      //     return true;
+      //   } else {
+      //     setButtonEnable(false);
+      //     return false;
+      //   }
+      // } catch (error) {
+      //   setButtonEnable(false);
+      //   return false;
+      // }
     }
   };
 
   const getProducts = async () => {
-    const data = await getAllProducts();
-    const optionsData = data?.map((item) => {
-      return { value: item?.id, label: item?.name };
-    });
-    setOptions(optionsData);
+    // const data = await getAllProducts();
+    // const optionsData = data?.map((item) => {
+    //   return { value: item?.id, label: item?.name };
+    // });
+    // setOptions(optionsData);
   };
   //value label
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "../../../components/modal/Modal";
-import { getBestSellingPlatilloLastMonth, getPlatilloById } from "../../../firebase/Api";
+// import { getBestSellingPlatilloLastMonth, getPlatilloById } from "../../../firebase/Api";
 import { Card, CardContent, Typography } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
 import { IMG_NULL } from "../../../constants/Constants";
@@ -18,14 +18,14 @@ const PlatilloMasVendido = ({ isOpen, onClose, onSaveHandler }) => {
 
 
   const getPlatilloMasVendido = async () => {
-    try {
-      const res = await getBestSellingPlatilloLastMonth();
-      const resPlatillo = await getPlatilloById(res?.bestSellingPlatilloId);
-      image.current =  resPlatillo?.img === null ? IMG_NULL : resPlatillo?.img;
-      setData({ ...res, ...resPlatillo });
-    } catch (error) {
-      console.log("error :>> ", error);
-    }
+    // try {
+    //   const res = await getBestSellingPlatilloLastMonth();
+    //   const resPlatillo = await getPlatilloById(res?.bestSellingPlatilloId);
+    //   image.current =  resPlatillo?.img === null ? IMG_NULL : resPlatillo?.img;
+    //   setData({ ...res, ...resPlatillo });
+    // } catch (error) {
+    //   console.log("error :>> ", error);
+    // }
   };
 
   console.log("image.current :>> ", image.current);

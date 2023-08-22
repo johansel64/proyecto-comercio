@@ -15,16 +15,16 @@ const Routers = () => {
       <Route path="/" element={<AuthLayout />}>
         <Route index element={<Login />} />
       </Route>
-      {auth && auth?.user && auth?.user?.accessToken && auth?.user?.email ? (
+      {/* {auth && auth?.user && auth?.user?.accessToken && auth?.user?.email ? ( */}
         <Route path="/inventario" element={<ScreensProtected />}>
           <Route index element={<Inventario />} />
           <Route path="/inventario/platillos" element={<Platillos />} />
           <Route path="/inventario/orders" element={<Orders />} />
         </Route>
-      ) : (
+      {/* ) : (
         <Route path="/inventario" element={<AuthLayout />}>
           <></>
-        </Route>
+        </Route> */}
       )}
     </Routes>
   );
