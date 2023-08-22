@@ -1,5 +1,16 @@
   import { db } from "./FirebaseConfig";
-  
+  import {
+    collection,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    getDoc,
+    getDocs,
+    runTransaction,
+    where,
+    query,
+  } from "firebase/firestore";
   //CAMPOS - numeroPlaca, descripcion, marca, idFuncionarioResponsable
   const collectionNameActivos = "Activos";
   //CAMPOS - nombreDepartamento, codigo, ubicacion
@@ -11,7 +22,7 @@
   //FUNCIONARIOS
   export const saveFuncionario = async (id, nombreCompleto, idDepartamento, rol) => {
     try {
-      const registerDate = firebase.firestore.FieldValue.serverTimestamp();
+      const registerDate = Math.floor(Date.now() / 1000);
       const funcionarioData = {
         id,
         nombreCompleto,
@@ -20,7 +31,7 @@
         rol
       };
   
-      await db.collection(collectionNameFuncionarios).add(funcionarioData);
+      await addDoc(collection(db, collectionNameFuncionarios), funcionarioData);
       return { success: true, message: 'Funcionario guardado exitosamente' };
     } catch (error) {
       console.error('Error al guardar el funcionario:', error);
@@ -30,7 +41,7 @@
   
   export const updateFuncionario = async (funcionarioId, nombreCompleto, idDepartamento, rol) => {
     try {
-      const funcionarioRef = db.collection(collectionNameFuncionarios).doc(funcionarioId);
+      const funcionarioRef = doc(db, collectionNameFuncionarios, funcionarioId);
   
       // Verificar si el funcionario existe antes de actualizar
       const doc = await funcionarioRef.get();
@@ -52,33 +63,10 @@
     }
   };
   
-  
-
-  //DEPARTAMENTOS
-  export const saveDepartamentos = async (nombreDepartamento, codigo, ubicacion) => {
-    try {
-      // Validar que los campos requeridos estén completos
-      if (!nombreDepartamento || !codigo || !ubicacion) {
-        return { success: false, message: 'Completa todos los campos' };
-      }
-  
-      // Guardar el departamento en la colección "Departamentos"
-      await db.collection(collectionNameDepartamentos).add({
-        nombreDepartamento,
-        codigo,
-        ubicacion
-      });
-  
-      return { success: true, message: 'Departamento guardado exitosamente' };
-    } catch (error) {
-      console.error('Error al guardar el departamento:', error);
-      return { success: false, message: 'Error al guardar el departamento' };
-    }
-  };
-
   export const fetchFuncionarios = async () => {
     try {
-      const querySnapshot = await db.collection(collectionNameFuncionarios).get();
+      const funcionariosCollection = collection(db, collectionNameFuncionarios);
+      const querySnapshot = await getDocs(funcionariosCollection);
       const funcionarios = [];
   
       querySnapshot.forEach((doc) => {
@@ -96,6 +84,7 @@
     }
   };
 
+  //DEPARTAMENTOS
   export const updateDepartamento = async (departamentoId, nombreDepartamento, codigo, ubicacion) => {
     try {
       // Validar que los campos requeridos estén completos
@@ -103,8 +92,10 @@
         return { success: false, message: 'Completa todos los campos' };
       }
   
+      const departamentoRef = doc(db, collectionNameDepartamentos, departamentoId);
+  
       // Actualizar el departamento en la colección "Departamentos"
-      await db.collection(collectionNameDepartamentos).doc(departamentoId).update({
+      await updateDoc(departamentoRef, {
         nombreDepartamento,
         codigo,
         ubicacion
@@ -116,10 +107,11 @@
       return { success: false, message: 'Error al actualizar el departamento' };
     }
   };
-
+  
   export const fetchDepartamentos = async () => {
     try {
-      const querySnapshot = await db.collection(collectionNameDepartamentos).get();
+      const departamentosCollection = collection(db, collectionNameDepartamentos);
+      const querySnapshot = await getDocs(departamentosCollection);
       const departamentos = [];
   
       querySnapshot.forEach((doc) => {
@@ -139,8 +131,10 @@
   
   export const deleteDepartamento = async (departamentoId) => {
     try {
+      const departamentoRef = doc(db, collectionNameDepartamentos, departamentoId);
+  
       // Eliminar el departamento de la colección "Departamentos"
-      await db.collection(collectionNameDepartamentos).doc(departamentoId).delete();
+      await deleteDoc(departamentoRef);
   
       return { success: true, message: 'Departamento eliminado exitosamente' };
     } catch (error) {
@@ -151,7 +145,6 @@
 
 
 //ACTIVOS
-
 export const saveActivo = async (numeroPlaca, descripcion, marca, idFuncionarioResponsable) => {
   try {
     // Validar que los campos requeridos estén completos
@@ -159,13 +152,15 @@ export const saveActivo = async (numeroPlaca, descripcion, marca, idFuncionarioR
       return { success: false, message: 'Completa todos los campos' };
     }
 
-    // Guardar el activo en la colección "Activos"
-    await db.collection(collectionNameActivos).add({
+    const activoData = {
       numeroPlaca,
       descripcion,
       marca,
       idFuncionarioResponsable
-    });
+    };
+
+    // Guardar el activo en la colección "Activos"
+    await addDoc(collection(db, collectionNameActivos), activoData);
 
     return { success: true, message: 'Activo guardado exitosamente' };
   } catch (error) {
@@ -176,11 +171,11 @@ export const saveActivo = async (numeroPlaca, descripcion, marca, idFuncionarioR
 
 export const updateActivo = async (activoId, numeroPlaca, descripcion, marca, idFuncionarioResponsable) => {
   try {
-    const activoRef = db.collection(collectionNameActivos).doc(activoId);
+    const activoRef = doc(db, collectionNameActivos, activoId);
 
     // Verificar si el activo existe antes de actualizar
-    const doc = await activoRef.get();
-    if (!doc.exists) {
+    const docSnapshot = await getDoc(activoRef);
+    if (!docSnapshot.exists()) {
       return { success: false, message: 'El activo no existe' };
     }
 
@@ -191,7 +186,7 @@ export const updateActivo = async (activoId, numeroPlaca, descripcion, marca, id
       idFuncionarioResponsable
     };
 
-    await activoRef.update(updatedData);
+    await updateDoc(activoRef, updatedData);
     return { success: true, message: 'Activo actualizado exitosamente' };
   } catch (error) {
     console.error('Error al actualizar el activo:', error);
@@ -201,11 +196,11 @@ export const updateActivo = async (activoId, numeroPlaca, descripcion, marca, id
 
 export const fetchActivo = async (activoId) => {
   try {
-    const activoRef = db.collection(collectionNameActivos).doc(activoId);
-    const doc = await activoRef.get();
+    const activoRef = doc(db, collectionNameActivos, activoId);
+    const docSnapshot = await getDoc(activoRef);
 
-    if (doc.exists) {
-      return { success: true, data: doc.data() };
+    if (docSnapshot.exists()) {
+      return { success: true, data: docSnapshot.data() };
     } else {
       return { success: false, message: 'El activo no existe' };
     }
@@ -217,7 +212,8 @@ export const fetchActivo = async (activoId) => {
 
 export const fetchActivos = async () => {
   try {
-    const querySnapshot = await db.collection(collectionNameActivos).get();
+    const activosCollection = collection(db, collectionNameActivos);
+    const querySnapshot = await getDocs(activosCollection);
     const activos = [];
 
     querySnapshot.forEach((doc) => {
