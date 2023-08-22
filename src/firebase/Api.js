@@ -20,17 +20,16 @@
 
 
   //FUNCIONARIOS
-  export const saveFuncionario = async (id, nombreCompleto, idDepartamento, rol) => {
+  export const saveFuncionario = async (data) => {
     try {
       const registerDate = Math.floor(Date.now() / 1000);
       const funcionarioData = {
-        id,
-        nombreCompleto,
+        nombreCompleto: data.nombreCompleto,
         fechaRegistro: registerDate,
-        idDepartamento,
-        rol
+        idDepartamento: "6h5fT242Xux8fRgojb0H",
+        rol: "user",
       };
-  
+      console.log(funcionarioData);
       await addDoc(collection(db, collectionNameFuncionarios), funcionarioData);
       return { success: true, message: 'Funcionario guardado exitosamente' };
     } catch (error) {

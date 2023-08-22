@@ -6,7 +6,7 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { ExportToCsv } from "export-to-csv";
-// import { updateProduct, getAllProducts, saveProduct, deleteProduct } from "../../firebase/Api";
+import { saveFuncionario } from "../../firebase/Api";
 import { priceFormatter } from "../../utils/Utils";
 import CreateNewAccountModal from "./Modales";
 
@@ -36,11 +36,17 @@ const TableFuncionarios = ({ data = [] }) => {
       {
         accessorKey: "fechaRegistro",
         header: "fechaRegistro",
+        enableColumnOrdering: false,
+        enableEditing: false, //disable editing on this column
+        enableSorting: false,
         size: 100,
       },
       {
         accessorKey: "idDepartamento", //normal accessorKey
         header: "idDepartamento",
+        enableColumnOrdering: false,
+        enableEditing: false, //disable editing on this column
+        enableSorting: false,
         size: 100,
       },
       {
@@ -67,9 +73,24 @@ const TableFuncionarios = ({ data = [] }) => {
   const [tableDataFuncionarios, setTableDataFuncionarios] = useState(data);
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
+
+  const addFuncionario = async (funcionario) => {
+    toast.promise(saveFuncionario(funcionario),
+       {
+         loading: 'Guardando...',
+         success: <b>Producto guardado!</b>,
+         error: <b>Error al guardar.</b>,
+       }
+     );
+  };
+
   const handleCreateNewRowFuncionario = async (values) => {
+    addFuncionario(values);
+    tableDataFuncionarios.push(values);
+    setTableDataFuncionarios([...tableDataFuncionarios]);
 
   };
+
   const handleSaveRowEditsFuncionario = async ({ exitEditingMode, row, values }) => {
 
   };
@@ -136,7 +157,7 @@ const TableFuncionarios = ({ data = [] }) => {
           </Box>
         )}
         renderTopToolbarCustomActions={({ table }) => (
-          auth.userInfo?.rol ==='admin' && <Box sx={{ display: "flex", gap: "1rem", p: "0.5rem", flexWrap: "wrap" }}>
+           <Box sx={{ display: "flex", gap: "1rem", p: "0.5rem", flexWrap: "wrap" }}>
             <Button style={{backgroundColor: 'green'}} onClick={() => setCreateModalOpen(true)} >
               Agregar Producto
             </Button>

@@ -7,7 +7,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchFuncionarios  } from "../../firebase/Api";
 import Loading from "../../components/loading/Loading";
-import { Inventory2 } from "@mui/icons-material";
 
 import "./Orders.css";
 
@@ -56,7 +55,7 @@ const Orders = () => {
       <div className="container">
         <Card sx={{ minWidth: 300, width: "100%", marginTop: "50px" }}>
           <Typography sx={{ fontSize: 25, textAlign: "center", fontWeight: "bold" }}color="text.secondary" gutterBottom>
-            INVENTARIO <Inventory2 />
+            FUNCIONARIOS
           </Typography>
         </Card>
         {allFuncionarios ? <TableFuncionarios data={allFuncionarios} /> : <Loading />}
