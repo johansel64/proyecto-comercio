@@ -11,7 +11,7 @@ import { priceFormatter } from "../../utils/Utils";
 import CreateNewAccountModal from "./Modales";
 
 //CSS File
-import "./Table.css";
+import "./TableFuncionarios.css";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../button/Button";
 

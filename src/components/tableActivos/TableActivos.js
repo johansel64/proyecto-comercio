@@ -11,11 +11,12 @@ import { priceFormatter } from "../../utils/Utils";
 import CreateNewAccountModal from "./Modales";
 
 //CSS File
-import "./Table.css";
+import "./TableActivos.css";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../button/Button";
+import { deleteActivo, saveActivo, updateActivo } from "../../firebase/Api";
 
-const Table = ({ data = [] }) => {
+const TableActivos = ({ data = [] }) => {
   const auth = useAuth();
 
   const columns = useMemo(
@@ -29,51 +30,24 @@ const Table = ({ data = [] }) => {
         size: 100,
       },
       {
-        accessorKey: "name", //access nested data with dot notation
-        header: "Producto",
+        accessorKey: "numeroPlaca", //access nested data with dot notation
+        header: "Numero de Placa",
         size: 200,
       },
       {
-        accessorKey: "price",
-        header: "Precio",
-        size: 100,
-        Cell: ({ cell }) => (
-          <Box
-            component="span"
-            sx={() => ({
-              borderRadius: "0.25rem",
-              color: "#000",
-              maxWidth: "9ch",
-              p: "0.25rem",
-            })}
-          >
-            {"₡ " + priceFormatter(cell.getValue())}
-          </Box>
-        ),
+        accessorKey: "descripcion", //access nested data with dot notation
+        header: "Descripcion",
+        size: 200,
       },
       {
-        accessorKey: "count", //normal accessorKey
-        header: "Cantidad",
-        size: 50,
-        Cell: ({ cell }) => (
-          <Box
-            component="span"
-            sx={(theme) => ({
-              backgroundColor:
-                cell.getValue() < 10
-                  ? theme.palette.error.dark
-                  : cell.getValue() >= 10 && cell.getValue() < 25
-                  ? theme.palette.warning.dark
-                  : theme.palette.success.dark,
-              borderRadius: "0.25rem",
-              color: "#fff",
-              maxWidth: "9ch",
-              p: "0.25rem",
-            })}
-          >
-            {cell.getValue()}
-          </Box>
-        ),
+        accessorKey: "marca", //access nested data with dot notation
+        header: "Marca",
+        size: 200,
+      },
+      {
+        accessorKey: "idFuncionarioResponsable", //access nested data with dot notation
+        header: "idFuncionarioResponsable",
+        size: 200,
       },
     ],
     []
@@ -95,7 +69,7 @@ const Table = ({ data = [] }) => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const handleCreateNewRow = async (values) => {
-    addProduct(values);
+    addActivo(values);
     tableData.push(values);
     setTableData([...tableData]);
 
@@ -103,48 +77,47 @@ const Table = ({ data = [] }) => {
   };
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     tableData[row.index] = values;
-    editProduct(values);
+    editActivos(values);
     setTableData([...tableData]);
     exitEditingMode();
   };
 
   const handleDeleteRow = useCallback(
     (row, id) => {
-      deleteProductSelected(row.original.id);
+      deleteActivoSelected(row.original.id);
       //send api delete request here, then refetch or update local table data for re-render
       tableData.splice(row.index, 1);
       setTableData([...tableData]);
-      toast.dismiss(id); // Cierra el toast una vez que el producto se haya eliminado
-      toast.success("Producto eliminado exitosamente");
+      toast.dismiss(id); // Cierra el toast una vez que el Activo se haya eliminado
+      toast.success("Activo eliminado exitosamente");
     },
     [tableData]
   );
 
-  const addProduct = async (product) => {
-    // toast.promise(saveProduct(product),
-    //    {
-    //      loading: 'Guardando...',
-    //      success: <b>Producto guardado!</b>,
-    //      error: <b>Error al guardar.</b>,
-    //    }
-    //  );
-    // getAllProducts();
+  const addActivo = async (activo) => {
+    // toast.promise(saveActivo(activo.numeroPlaca, activo.descripcion, activo.marca, activo.idFuncionarioResponsable),
+    toast.promise(saveActivo(activo.numeroPlaca, activo.descripcion, activo.marca, 'ZA7bljb4E4XvGnWeSjcY'),
+       {
+         loading: 'Guardando...',
+         success: <b>Activo guardado!</b>,
+         error: <b>Error al guardar.</b>,
+       }
+     );
 
   };
 
-  const editProduct = async (product) => {
-    // toast.promise(updateProduct(product),
-    //    {
-    //      loading: 'Actualizando...',
-    //      success: <b>Producto actualizado!</b>,
-    //      error: <b>Error al actualizar.</b>,
-    //    }
-    //  );
+  const editActivos = async (activo) => {
+    toast.promise(updateActivo(activo.id, activo.numeroPlaca, activo.descripcion, activo.marca, activo.idFuncionarioResponsable),
+       {
+         loading: 'Actualizando...',
+         success: <b>Activo actualizado!</b>,
+         error: <b>Error al actualizar.</b>,
+       }
+     );
   };
 
-  const deleteProductSelected = async (id) => {
-    // await deleteProduct(id);
-    // getAllProducts();
+  const deleteActivoSelected = async (id) => {
+    await deleteActivo(id);
   };
 
   const handleExportRows = (rows) => {
@@ -158,7 +131,7 @@ const Table = ({ data = [] }) => {
   const deleteProductToast = (row) => {
     toast((t) => (
       <div className="delete-toast">
-        <p>¿Estás seguro de que deseas eliminar este producto?</p>
+        <p>¿Estás seguro de que deseas eliminar este activo?</p>
         <div className="button-container">
           <button className="confirm-button" onClick={() => handleDeleteRow(row, t.id)}>Sí</button>
           <button className="cancel-button" onClick={() => toast.dismiss(t.id)}>No</button>
@@ -174,10 +147,10 @@ const Table = ({ data = [] }) => {
       <MaterialReactTable
         columns={columns}
         data={tableData}
-        editingMode={auth.userInfo?.rol ==='admin' ? "modal" : null} //default
-        enableColumnOrdering={auth.userInfo?.rol ==='admin'}
-        enableEditing={auth.userInfo?.rol ==='admin'}
-        onEditingRowSave={auth.userInfo?.rol ==='admin' ? handleSaveRowEdits : () => {}}
+        editingMode="modal" //default
+        enableColumnOrdering
+        enableEditing
+        onEditingRowSave={handleSaveRowEdits}
         enableRowSelection
         positionToolbarAlertBanner="bottom"
         initialState={{ columnVisibility: { id: false } }}
@@ -204,9 +177,9 @@ const Table = ({ data = [] }) => {
           </Box>
         )}
         renderTopToolbarCustomActions={({ table }) => (
-          auth.userInfo?.rol ==='admin' && <Box sx={{ display: "flex", gap: "1rem", p: "0.5rem", flexWrap: "wrap" }}>
+          <Box sx={{ display: "flex", gap: "1rem", p: "0.5rem", flexWrap: "wrap" }}>
             <Button style={{backgroundColor: 'green'}} onClick={() => setCreateModalOpen(true)} >
-              Agregar Producto
+              Agregar Activo
             </Button>
             <Button
               //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
@@ -214,7 +187,7 @@ const Table = ({ data = [] }) => {
               leftIcon={<FileDownloadIcon />}
               style={{ background: "#FFBF00" }}
             >
-              Exportar Productos
+              Exportar Activos
             </Button>
             <Button
               disabled={table.getPrePaginationRowModel().rows.length === 0}
@@ -241,7 +214,7 @@ const Table = ({ data = [] }) => {
               leftIcon={<FileDownloadIcon />}
               style={{ background: "#FFBF00" }}
               >
-              Exportar productos seleccionados
+              Exportar Activos seleccionados
             </Button>
           </Box>
         )}
@@ -261,4 +234,4 @@ const Table = ({ data = [] }) => {
   );
 };
 
-export default Table;
+export default TableActivos;

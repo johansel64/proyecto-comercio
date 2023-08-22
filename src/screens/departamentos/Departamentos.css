@@ -1,0 +1,25 @@
+.container {
+    width: 100%;
+    height: auto;
+}
+.flex{
+    display: flex;
+    justify-content: center;
+}
+.div_flex{
+    margin: 0.5rem;
+}
+.margin_flex{
+    margin: 0.5rem;
+}
+
+@media (max-width: 780px) {
+    .container {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .flex{
+        justify-content: end;
+    }
+}

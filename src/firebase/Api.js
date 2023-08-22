@@ -84,6 +84,29 @@
   };
 
   //DEPARTAMENTOS
+  export const saveDepartamento = async (codigo, nombreDepartamento, ubicacion) => {
+    try {
+      // Validar que los campos requeridos estén completos
+      if (!codigo || !nombreDepartamento || !ubicacion) {
+        return { success: false, message: 'Completa todos los campos' };
+      }
+  
+      const departamentoData = {
+        codigo,
+        nombreDepartamento,
+        ubicacion,
+      };
+  
+      // Guardar el activo en la colección "Activos"
+      await addDoc(collection(db, collectionNameDepartamentos), departamentoData);
+  
+      return { success: true, message: 'Departamento guardado exitosamente' };
+    } catch (error) {
+      console.error('Error al guardar el departamento:', error);
+      return { success: false, message: 'Error al guardar el departamento' };
+    }
+  };
+
   export const updateDepartamento = async (departamentoId, nombreDepartamento, codigo, ubicacion) => {
     try {
       // Validar que los campos requeridos estén completos
@@ -229,3 +252,17 @@ export const fetchActivos = async () => {
     return { success: false, message: 'Error al obtener activos' };
   }
 };
+
+export const deleteActivo = async (activoId) => {
+    try {
+      const activoRef = doc(db, collectionNameActivos, activoId);
+  
+      // Eliminar el activo de la colección "Activos"
+      await deleteDoc(activoRef);
+  
+      return { success: true, message: 'Activo eliminado exitosamente' };
+    } catch (error) {
+      console.error('Error al eliminar el activo:', error);
+      return { success: false, message: 'Error al eliminar el activo' };
+    }
+  };
