@@ -83,6 +83,22 @@
     }
   };
 
+  export const fetchFuncionario = async (funcionarioId) => {
+    try {
+      const fncionarioRef = doc(db, collectionNameFuncionarios, funcionarioId);
+      const docSnapshot = await getDoc(fncionarioRef);
+  
+      if (docSnapshot.exists()) {
+        return { success: true, data: docSnapshot.data() };
+      } else {
+        return { success: false, message: 'El funcionario no existe' };
+      }
+    } catch (error) {
+      console.error('Error al obtener el funcionario:', error);
+      return { success: false, message: 'Error al obtener el funcionario' };
+    }
+  };
+
   //DEPARTAMENTOS
   export const saveDepartamento = async (codigo, nombreDepartamento, ubicacion) => {
     try {
@@ -236,16 +252,19 @@ export const fetchActivos = async () => {
   try {
     const activosCollection = collection(db, collectionNameActivos);
     const querySnapshot = await getDocs(activosCollection);
+    const funcionarios = await fetchFuncionarios()
     const activos = [];
 
     querySnapshot.forEach((doc) => {
+      const funcionario = funcionarios.data?.find((element) => element.id == doc.data()?.idFuncionarioResponsable)
+      console.log('funcionario :>> ', funcionario);
       const activo = {
+        nombreFuncionario: funcionario.nombreCompleto,
         id: doc.id,
         ...doc.data()
       };
       activos.push(activo);
     });
-
     return { success: true, data: activos };
   } catch (error) {
     console.error('Error al obtener activos:', error);

@@ -29,6 +29,7 @@ const Activos = () => {
 
   const getAllProductsTable = async () => {
     const data = await fetchActivos();
+    console.log('data :>> ', data);
     setactivos(data);
   };
 

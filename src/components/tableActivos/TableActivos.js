@@ -45,8 +45,8 @@ const TableActivos = ({ data = [] }) => {
         size: 200,
       },
       {
-        accessorKey: "idFuncionarioResponsable", //access nested data with dot notation
-        header: "idFuncionarioResponsable",
+        accessorKey: "nombreFuncionario", //access nested data with dot notation
+        header: "Funcionario A Cargo",
         size: 200,
       },
     ],
@@ -96,7 +96,7 @@ const TableActivos = ({ data = [] }) => {
 
   const addActivo = async (activo) => {
     // toast.promise(saveActivo(activo.numeroPlaca, activo.descripcion, activo.marca, activo.idFuncionarioResponsable),
-    toast.promise(saveActivo(activo.numeroPlaca, activo.descripcion, activo.marca, 'ZA7bljb4E4XvGnWeSjcY'),
+    toast.promise(saveActivo(activo.numeroPlaca, activo.descripcion, activo.marca, activo.idFuncionarioResponsable),
        {
          loading: 'Guardando...',
          success: <b>Activo guardado!</b>,
