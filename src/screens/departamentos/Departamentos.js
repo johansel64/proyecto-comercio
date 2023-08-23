@@ -1,17 +1,18 @@
-import Table from "../../components/tableDepartments/TableDepartments";
+import TableDepartments from "../../components/tableDepartments/TableDepartments";
 import React, { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 //import { toast } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import { saveProduct, getAllProducts } from "../../firebase/Api";
+// import { saveProduct, getDepartmentss } from "../../firebase/Api";
 import Loading from "../../components/loading/Loading";
 import { Inventory2 } from "@mui/icons-material";
 
-import "./inventario.css";
+import "./Departamentos.css";
+import { fetchDepartamentos } from "../../firebase/Api";
 
-const Inventario = () => {
+const Departamentos = () => {
   const initialProduct = {
     name: "",
     price: "",
@@ -19,7 +20,7 @@ const Inventario = () => {
   };
 
   const [product, setProduct] = useState(initialProduct);
-  const [allProduct, setAllProduct] = useState();
+  const [departments, setDepartments] = useState();
   //const { tableData, setTableData } = useState([]);
 
   useEffect(() => {
@@ -27,9 +28,9 @@ const Inventario = () => {
   }, []);
 
   const getAllProductsTable = async () => {
-    // const data = await getAllProducts();
-    // setAllProduct(data);
-    // console.log(data);
+    const data = await fetchDepartamentos();
+    console.log('data :>> ', data);
+    setDepartments(data);
   };
 
   const addOrEditProduct = async (product) => {
@@ -52,14 +53,14 @@ const Inventario = () => {
       <div className="container">
         <Card sx={{ minWidth: 300, width: "100%", marginTop: "50px" }}>
           <Typography sx={{ fontSize: 25, textAlign: "center", fontWeight: "bold" }}color="text.secondary" gutterBottom>
-            INVENTARIO <Inventory2 />
+            DEPARTAMENTOS <Inventory2 />
           </Typography>
         </Card>
-        {allProduct ? <Table data={allProduct} /> : <Loading />}
+        {departments ? departments?.success ? <TableDepartments data={departments?.data} /> : <p style={{textAlign: 'center', color: 'red', marginTop: 50}}>{departments?.message}</p> : <Loading />}
         <ToastContainer />
       </div>
     </>
   );
 };
 
-export default Inventario;
+export default Departamentos;

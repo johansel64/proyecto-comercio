@@ -20,11 +20,11 @@ function Navbar(){
     return (
         <>
             <NavbarContainer>
-                <h2>Restaurante <span>BASTOS</span></h2>
+                <h2>CONTROL <span>ACTIVOS</span></h2>
                 <div className={`links ${clicked ? 'active' : ''}`}>
-                    <a onClick={handleClick} href="/inventario">Productos</a>
-                    <a onClick={handleClick} href="/inventario/platillos">Platillos</a>
-                    <a onClick={handleClick} href="/inventario/orders">Ordenes</a>
+                    <a onClick={handleClick} href="/departamentos">Departamentos</a>
+                    <a onClick={handleClick} href="/departamentos/funcionarios">Funcionarios</a>
+                    <a onClick={handleClick} href="/departamentos/activos">Activos</a>
                     <a onClick={ () => handleLogout() } href="/"><Logout style={{ height: '18px', color: 'red'}} /></a>
 
                 </div>

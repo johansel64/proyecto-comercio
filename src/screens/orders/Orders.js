@@ -1,4 +1,4 @@
-import TableFuncionarios from "../../components/table/TableFuncionarios";
+import TableFuncionarios from "../../components/tableFuncionarios/TableFuncionarios";
 import React, { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";

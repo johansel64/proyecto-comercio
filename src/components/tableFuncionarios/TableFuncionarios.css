@@ -1,0 +1,53 @@
+.tableContainer {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  margin-top: 50px;
+  position: relative !important;
+}
+
+@media (max-width: 780px) {
+  .tableContainer {
+    justify-content: flex-start;
+    overflow-x: auto;
+    width: 100%;
+  }
+}
+
+
+.delete-toast {
+  text-align: center;
+}
+
+.delete-toast p {
+  margin: 0 0 10px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.confirm-button, .cancel-button {
+  padding: 5px 10px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirm-button {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.cancel-button {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.confirm-button:hover, .cancel-button:hover {
+  background-color: #c0392b;
+}
+

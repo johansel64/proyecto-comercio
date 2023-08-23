@@ -97,7 +97,46 @@
     }
   };
 
+  export const fetchFuncionario = async (funcionarioId) => {
+    try {
+      const fncionarioRef = doc(db, collectionNameFuncionarios, funcionarioId);
+      const docSnapshot = await getDoc(fncionarioRef);
+  
+      if (docSnapshot.exists()) {
+        return { success: true, data: docSnapshot.data() };
+      } else {
+        return { success: false, message: 'El funcionario no existe' };
+      }
+    } catch (error) {
+      console.error('Error al obtener el funcionario:', error);
+      return { success: false, message: 'Error al obtener el funcionario' };
+    }
+  };
+
   //DEPARTAMENTOS
+  export const saveDepartamento = async (codigo, nombreDepartamento, ubicacion) => {
+    try {
+      // Validar que los campos requeridos estén completos
+      if (!codigo || !nombreDepartamento || !ubicacion) {
+        return { success: false, message: 'Completa todos los campos' };
+      }
+  
+      const departamentoData = {
+        codigo,
+        nombreDepartamento,
+        ubicacion,
+      };
+  
+      // Guardar el activo en la colección "Activos"
+      await addDoc(collection(db, collectionNameDepartamentos), departamentoData);
+  
+      return { success: true, message: 'Departamento guardado exitosamente' };
+    } catch (error) {
+      console.error('Error al guardar el departamento:', error);
+      return { success: false, message: 'Error al guardar el departamento' };
+    }
+  };
+
   export const updateDepartamento = async (departamentoId, nombreDepartamento, codigo, ubicacion) => {
     try {
       // Validar que los campos requeridos estén completos
@@ -244,19 +283,36 @@ export const fetchActivos = async () => {
   try {
     const activosCollection = collection(db, collectionNameActivos);
     const querySnapshot = await getDocs(activosCollection);
+    const funcionarios = await fetchFuncionarios()
     const activos = [];
 
     querySnapshot.forEach((doc) => {
+      const funcionario = funcionarios.data?.find((element) => element.id == doc.data()?.idFuncionarioResponsable)
+      console.log('funcionario :>> ', funcionario);
       const activo = {
+        nombreFuncionario: funcionario.nombreCompleto,
         id: doc.id,
         ...doc.data()
       };
       activos.push(activo);
     });
-
     return { success: true, data: activos };
   } catch (error) {
     console.error('Error al obtener activos:', error);
     return { success: false, message: 'Error al obtener activos' };
   }
 };
+
+export const deleteActivo = async (activoId) => {
+    try {
+      const activoRef = doc(db, collectionNameActivos, activoId);
+  
+      // Eliminar el activo de la colección "Activos"
+      await deleteDoc(activoRef);
+  
+      return { success: true, message: 'Activo eliminado exitosamente' };
+    } catch (error) {
+      console.error('Error al eliminar el activo:', error);
+      return { success: false, message: 'Error al eliminar el activo' };
+    }
+  };
