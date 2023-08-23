@@ -1,5 +1,6 @@
-# GET CLONE PROYECT GIT
-
+## GET CLONE PROJECT GIT
+### Open the CMD in the path where you want to save the project
+### `git clone https://github.com/johansel64/proyecto-comercio.git`
 
 # Getting Started with Create React App
 
