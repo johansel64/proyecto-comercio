@@ -24,6 +24,7 @@
     try {
       const registerDate = Math.floor(Date.now() / 1000);
       const funcionarioData = {
+        idUsuario: data.idUsuario,
         nombreCompleto: data.nombreCompleto,
         fechaRegistro: registerDate,
         idDepartamento: "6h5fT242Xux8fRgojb0H",
@@ -61,20 +62,33 @@
       return { success: false, message: 'Error al actualizar el funcionario' };
     }
   };
-  
+
+  // Función para formatear la fecha Unix a un formato legible
+  function formatUnixDate(unixTimestamp) {
+    const date = new Date(unixTimestamp * 1000);
+    return date.toLocaleDateString(); // Puedes personalizar el formato de fecha según tus necesidades
+  }
+
   export const fetchFuncionarios = async () => {
     try {
       const funcionariosCollection = collection(db, collectionNameFuncionarios);
       const querySnapshot = await getDocs(funcionariosCollection);
       const funcionarios = [];
   
-      querySnapshot.forEach((doc) => {
-        const funcionario = {
-          id: doc.id,
-          ...doc.data()
-        };
-        funcionarios.push(funcionario);
-      });
+      for (const doc of querySnapshot.docs) {
+        const funcionarioData = doc.data();
+        const departamentoData = await fetchDepartamento(funcionarioData.idDepartamento);
+        
+        if (departamentoData.success) {
+          const funcionario = {
+            id: doc.id,
+            ...funcionarioData,
+            fechaRegistro: formatUnixDate(funcionarioData.fechaRegistro),
+            nombreDepartamento: departamentoData.data.nombreDepartamento
+          };
+          funcionarios.push(funcionario);
+        }
+      }
   
       return { success: true, data: funcionarios };
     } catch (error) {
@@ -125,6 +139,23 @@
     } catch (error) {
       console.error('Error al obtener departamentos:', error);
       return { success: false, message: 'Error al obtener departamentos' };
+    }
+  };
+
+  export const fetchDepartamento = async (departamentoId) => {
+    try {
+      const departamentoDoc = doc(db, collectionNameDepartamentos, departamentoId);
+      const departamentoSnapshot = await getDoc(departamentoDoc);
+  
+      if (departamentoSnapshot.exists()) {
+        const departamentoData = departamentoSnapshot.data();
+        return { success: true, data: departamentoData };
+      } else {
+        return { success: false, message: 'El departamento no existe' };
+      }
+    } catch (error) {
+      console.error('Error al obtener el departamento:', error);
+      return { success: false, message: 'Error al obtener el departamento' };
     }
   };
   

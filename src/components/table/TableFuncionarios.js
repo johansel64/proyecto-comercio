@@ -30,20 +30,20 @@ const TableFuncionarios = ({ data = [] }) => {
       },
       {
         accessorKey: "nombreCompleto", //access nested data with dot notation
-        header: "nombreCompleto",
+        header: "Nombre Completo",
         size: 200,
       },
       {
         accessorKey: "fechaRegistro",
-        header: "fechaRegistro",
+        header: "Fecha Registro",
         enableColumnOrdering: false,
         enableEditing: false, //disable editing on this column
         enableSorting: false,
         size: 100,
       },
       {
-        accessorKey: "idDepartamento", //normal accessorKey
-        header: "idDepartamento",
+        accessorKey: "nombreDepartamento", //normal accessorKey
+        header: "Nombre Departamento",
         enableColumnOrdering: false,
         enableEditing: false, //disable editing on this column
         enableSorting: false,

@@ -62,8 +62,11 @@ export function AuthProvider({ children }) {
     ).then((user) => {
       return user;
     });
-    await saveFuncionario(response.user.uid, nombreCompleto, "", "user")
-    console.log(response);
+    const funcionarioData = {
+      idUsuario: response.user.uid,
+      nombreCompleto
+    };
+    await saveFuncionario(funcionarioData)
   };
   /**
    * "login" is a function that takes two parameters, "email" and "password", and returns a promise that
