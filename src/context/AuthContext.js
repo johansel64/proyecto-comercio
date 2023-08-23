@@ -93,7 +93,6 @@ export function AuthProvider({ children }) {
    */
   const logout = async () => {
     const response = await signOut(auth);
-    console.log(response);
   };
   return (
     <authContext.Provider

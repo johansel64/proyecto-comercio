@@ -112,7 +112,6 @@ const TableDepartments = ({ data = [] }) => {
   };
 
   const deleteDepartmentSelected = async (id) => {
-    console.log('id :>> ', id);
     await deleteDepartamento(id);
   };
 

@@ -5,17 +5,17 @@ import Button from "../button/Button";
 import { fetchFuncionarios } from "../../firebase/Api";
 import Select from "react-select";
 
-const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, state }) => {
+const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, state, dataColumn }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       acc[column.accessorKey ?? ""] = "";
+      console.log(column.accessorKey)
+      console.log(dataColumn)
       return acc;
     }, {})
   );
-  console.log('values :>> ', values);
   const [funcionarios, setFuncionarios] = useState();
   const [funcionarioACargo, setFuncionarioACargo] = useState();
-  console.log('funcionarioACargo :>> ', funcionarioACargo);
   useEffect(() => {
     getFuncionarios();
   }, []);
@@ -26,7 +26,6 @@ const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, state }) => {
       return { value: item?.id, label: item?.nombreCompleto };
     });
 
-    console.log("funcionariosOrder :>> ", funcionariosOrder);
     setFuncionarios(funcionariosOrder);
   };
 
@@ -41,7 +40,6 @@ const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, state }) => {
     onSubmit(data);
     onClose();
   };
-  console.log("columns :>> ", columns);
   return (
     <Dialog open={open} PaperProps={{ sx: { borderRadius: "16px" } }}>
       <DialogTitle textAlign="center">{state === "new" ? "Agregar Activo" : "Editar Activo"}</DialogTitle>

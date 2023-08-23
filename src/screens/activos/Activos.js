@@ -10,16 +10,10 @@ import Loading from "../../components/loading/Loading";
 import { Inventory2 } from "@mui/icons-material";
 
 import "./Activos.css";
-import { fetchActivos, fetchDepartamentos } from "../../firebase/Api";
+import { fetchActivos } from "../../firebase/Api";
 
 const Activos = () => {
-  const initialProduct = {
-    name: "",
-    price: "",
-    count: "",
-  };
 
-  const [product, setProduct] = useState(initialProduct);
   const [activos, setactivos] = useState();
   //const { tableData, setTableData } = useState([]);
 
@@ -29,24 +23,9 @@ const Activos = () => {
 
   const getAllProductsTable = async () => {
     const data = await fetchActivos();
-    console.log('data :>> ', data);
     setactivos(data);
   };
 
-  const addOrEditProduct = async (product) => {
-    // await saveProduct(product);
-    // await getAllProductsTable();
-    toast.success("Guardado!", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-    });
-  };
 
   return (
     <>

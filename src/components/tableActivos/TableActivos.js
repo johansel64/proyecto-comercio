@@ -66,7 +66,9 @@ const TableActivos = ({ data = [] }) => {
   const csvExporter = new ExportToCsv(csvOptions);
 
   const [tableData, setTableData] = useState(data);
+  const [rowData, setRowData] = useState();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const handleCreateNewRow = async (values) => {
     addActivo(values);
@@ -165,7 +167,7 @@ const TableActivos = ({ data = [] }) => {
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
             <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
+              <IconButton onClick={(e) => {setEditModalOpen(true); setRowData(row.original)}}>
                 <Edit />
               </IconButton>
             </Tooltip>
@@ -220,6 +222,7 @@ const TableActivos = ({ data = [] }) => {
         )}
       />
       <CreateNewAccountModal columns={columns} open={createModalOpen} onClose={() => setCreateModalOpen(false)} onSubmit={handleCreateNewRow} state={'new'} />
+      <CreateNewAccountModal columns={columns} dataColumn={rowData} open={editModalOpen} onClose={() => setEditModalOpen(false)} onSubmit={handleSaveRowEdits} state={'edit'} />
       <Toaster
         position="top-right"
         toastOptions={{

@@ -29,7 +29,6 @@ const Departamentos = () => {
 
   const getAllProductsTable = async () => {
     const data = await fetchDepartamentos();
-    console.log('data :>> ', data);
     setDepartments(data);
   };
 
