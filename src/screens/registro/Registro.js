@@ -1,17 +1,20 @@
+import React from "react";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-
-// CSS File
-import "./Login.css";
 import TextInput from "../../components/textInput/TextInput";
 import Button from "../../components/button/Button";
 
-const Login = () => {
-  const auth = useAuth();
+//CSS File
+import "./Registro.css";
+
+const Registro = () => {
+    const auth = useAuth();
   // const { displayName } = auth?.user;
 
   const [email1, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nombre, setNombre] = useState("");
+
   const [error, setError] = useState();
 
   const handleEmailChange = (e) => {
@@ -22,35 +25,34 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
+  const handleNameChange = (e) => {
+    setNombre(e.target.value);
+  };
+
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
     setError(undefined)
-    if (email1 && password) {
+    if (email1 && password && nombre) {
       try {
-        await auth.login(email1, password);
-        if (auth?.user?.displayName || email1) {
-          window.location.href = "/departamentos";
-        } else {
-          document.body.innerHTML = "<h1>ERROR 404</h1>";
+        const data = {
+            nombreCompleto: nombre,
+            email: email1,
+            password: password
         }
+        
       } catch (error) {
-        setError("Usuario o contraseña incorrecta.")
+        setError("Lo sentimos, ha ocurrido un error al registrarte, por favor, intente de nuevo.")
       }
     } else {
       setError("Por favor completa los campos requeridos.")
     }
   };
 
-  // const handleGoogle = (e) => {
-  //   e.preventDefault();
-  //   auth.loginWithGoogle();
-  // };
-
   return (
-    <div className="loginContainer">
-      <div className="boxLogin">
-        <div className="loginContent">
-          <h2>Iniciar sesión</h2>
+    <div className="registerContainer">
+      <div className="boxRegister">
+        <div className="registerContent">
+          <h2>Registrarse</h2>
           <form onSubmit={handleSubmitLogin}>
             <div className="formGroup">
               <TextInput type="email" label="Email" name="email" placeholder="Email" value={email1} onChange={handleEmailChange} />
@@ -65,11 +67,18 @@ const Login = () => {
                 onChange={handlePasswordChange}
               />
             </div>
-            {error && <p style={{color: 'red'}}>{error}</p>}
+            <div className="formGroup">
+              <TextInput type="text" label="Nombre Completo" name="name" placeholder="Nombre Completo" value={nombre} onChange={handleNameChange} />
+            </div>
+            {error && <p style={{ color: "red" }}>{error}</p>}
             <div className="buttonSubmit">
-              <Button style={{backgroundColor: 'green'}} type="submit">Iniciar sesión</Button>
-              <p>¿No posees cuenta?</p>
-              <Button style={{backgroundColor: 'gold'}} onClick={() => window.location.href = "/register"}>Registrate</Button>
+              <Button style={{ backgroundColor: "green" }} type="submit">
+                Registrarse
+              </Button>
+              <p>¿Ya posees cuenta?</p>
+              <Button style={{ backgroundColor: "gold" }} onClick={() => (window.location.href = "/")}>
+                Inicia Sesión
+              </Button>
             </div>
           </form>
         </div>
@@ -78,4 +87,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Registro;

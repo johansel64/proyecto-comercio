@@ -103,7 +103,7 @@ const TableActivos = ({ data = [] }) => {
          error: <b>Error al guardar.</b>,
        }
      );
-
+     window.location.href = window.location.href;
   };
 
   const editActivos = async (activo) => {
